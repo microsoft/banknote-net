@@ -18,7 +18,7 @@ If you make use of this dataset or pre-trained model in your own project, **plea
 The dataset data structure consists of 256-dimensional vector embeddings with additional columns for currency, denomination and face labels, as explained in the [data exploration](./src/data_exploration.ipynb) notebook. 
 The dataset is saved as **24,826 x 258** flat table in [feather](./data/banknote_net.feather) and [csv](./data/banknote_net.csv) file formats. Figure 1 presents some of these learned embeddings.
 <figure>
-  <img src="./src/embedding_vis.png"/ style="width:40%"></center>
+  <img src="./src/embedding_vis.png"/ style="width:50%"></center>
   <figcaption style="text-align: justify"> <b>Figure 1:</b> t-SNE representations of the BankNote-Net embeddings for a few selected currencies.
   </figcaption>
 </figure>
