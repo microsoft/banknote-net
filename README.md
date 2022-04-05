@@ -1,7 +1,5 @@
 # BankNote-Net: Open Dataset for Assistive Currency Recognition
 
-
-
 Millions of people around the world have low or no vision. Assistive software applications have been developed for a variety of day-to-day tasks, including currency recognition. To aid with this task, we present BankNote-Net, an open dataset for assistive currency recognition. 
 The dataset consists of a total of **24,816 embeddings** of banknote images captured in a variety of assistive scenarios, spanning **17 currencies** and **112 denominations**. These compliant embeddings were learned using supervised contrastive learning and a MobileNetV2 architecture, and they can be used to train and test specialized downstream models for any currency, including those not covered by our dataset or for which only a few real images per denomination are available (few-shot learning). We deploy a variation of this model for public use in the last version of the [Seeing AI](https://www.microsoft.com/en-us/ai/seeing-ai) app developed by Microsoft, which has over a 100 thousand monthly active users.
 
@@ -18,10 +16,12 @@ If you make use of this dataset or pre-trained model in your own project, **plea
 ## Data Structure
 
 The dataset data structure consists of 256-dimensional vector embeddings with additional columns for currency, denomination and face labels, as explained in the [data exploration](./src/data_exploration.ipynb) notebook. 
-The dataset is saved as **24,826 x 258** flat table in [feather](./data/banknote_net.feather) and [csv](./data/banknote_net.csv) file formats.
-
-### Figure: t-SNE representations of the BankNote-Net embeddings for a few selected currencies.
-![figure-1](./src/embedding_vis.png =500x)
+The dataset is saved as **24,826 x 258** flat table in [feather](./data/banknote_net.feather) and [csv](./data/banknote_net.csv) file formats. Figure 1 presents some of these learned embeddings.
+<figure>
+  <img src="./src/embedding_vis.png"/ style="width:40%"></center>
+  <figcaption style="text-align: justify"> <b>Figure 1:</b> t-SNE representations of the BankNote-Net embeddings for a few selected currencies.
+  </figcaption>
+</figure>
 
 ## Setup and Dataset Usage
 
@@ -122,7 +122,7 @@ The dataset is saved as **24,826 x 258** flat table in [feather](./data/banknote
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-The dataset is open for anyone to use under the [CDLA-Permissive-2.0](https://spdx.org/licenses/CDLA-Permissive-2.0.html) license.
+The dataset is open for anyone to use under the [CDLA-Permissive-2.0](https://spdx.org/licenses/CDLA-Permissive-2.0.html) license. The embeddings should not be used to reconstruct high resolution banknote images.
 
 ## Contributing
 
