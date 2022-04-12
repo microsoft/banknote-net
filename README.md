@@ -3,12 +3,12 @@
 Millions of people around the world have low or no vision. Assistive software applications have been developed for a variety of day-to-day tasks, including currency recognition. To aid with this task, we present BankNote-Net, an open dataset for assistive currency recognition. 
 The dataset consists of a total of **24,816 embeddings** of banknote images captured in a variety of assistive scenarios, spanning **17 currencies** and **112 denominations**. These compliant embeddings were learned using supervised contrastive learning and a MobileNetV2 architecture, and they can be used to train and test specialized downstream models for any currency, including those not covered by our dataset or for which only a few real images per denomination are available (few-shot learning). We deploy a variation of this model for public use in the last version of the [Seeing AI](https://www.microsoft.com/en-us/ai/seeing-ai) app developed by Microsoft, which has over a 100 thousand monthly active users.
 
-If you make use of this dataset or pre-trained model in your own project, **please consider referencing this GitHub repository and citing our [paper](TBD)**:
+If you make use of this dataset or pre-trained model in your own project, **please consider referencing this GitHub repository and citing our [paper](https://arxiv.org/pdf/2204.03738.pdf)**:
 ```
 @article{oviedoBankNote-Net2022,
   title   = {BankNote-Net: Open Dataset for Assistive Currency Recognition},
   author  = {Felipe Oviedo, Srinivas Vinnakota, Eugene Seleznev, Hemant Malhotra, Saqib Shaikh & Juan Lavista Ferres},
-  journal = {TBD},
+  journal = {https://arxiv.org/pdf/2204.03738.pdf},
   year    = {2022},
 }
 ```
