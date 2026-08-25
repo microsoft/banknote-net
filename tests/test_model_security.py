@@ -9,6 +9,7 @@
     do not require the pinned TensorFlow/h5py runtime to be installed.
 """
 
+import hashlib
 import io
 import json
 import os
@@ -156,8 +157,6 @@ def test_digest_mismatch_is_rejected(ms, fake_tensorflow, tmp_path):
     # Register the tampered file's *path* as trusted, but keep the digest
     # of the pristine repository copy, to isolate the digest check.
     with open(TRUSTED_CLASSIFIER, "rb") as fh:
-        import hashlib
-
         original_digest = hashlib.sha256(fh.read()).hexdigest()
     monkeypatch_key = os.path.relpath(str(tampered), ms._REPO_ROOT).replace(os.sep, "/")
     _write_manifest(manifest_path, {monkeypatch_key: {"sha256": original_digest}})
@@ -261,8 +260,6 @@ def test_lambda_layer_config_is_rejected(ms, fake_tensorflow, tmp_path):
     model_path.write_bytes(data)
 
     manifest_path = tmp_path / "manifest.json"
-    import hashlib
-
     digest = hashlib.sha256(data).hexdigest()
     rel_key = os.path.relpath(str(model_path), ms._REPO_ROOT).replace(os.sep, "/")
     _write_manifest(manifest_path, {rel_key: {"sha256": digest}})
@@ -279,8 +276,6 @@ def test_unapproved_custom_layer_type_is_rejected(ms, fake_tensorflow, tmp_path)
     model_path.write_bytes(data)
 
     manifest_path = tmp_path / "manifest.json"
-    import hashlib
-
     digest = hashlib.sha256(data).hexdigest()
     rel_key = os.path.relpath(str(model_path), ms._REPO_ROOT).replace(os.sep, "/")
     _write_manifest(manifest_path, {rel_key: {"sha256": digest}})
@@ -317,7 +312,6 @@ def test_trusted_manifest_covers_all_tracked_model_artifacts():
         "models/banknote_net_encoder.h5",
     ):
         assert rel_path in manifest
-        import hashlib
 
         with open(os.path.join(REPO_ROOT, rel_path), "rb") as fh:
             digest = hashlib.sha256(fh.read()).hexdigest()

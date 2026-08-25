@@ -145,14 +145,14 @@ The models tracked in this repository ([`src/trained_models/custom_classifier.h5
 If you train your own model with [train_custom.py](./src/train_custom.py) and want to load it with `predict_custom.py` (or use it as an encoder), you must register it as trusted first:
 
 ```
-sha256sum ./src/trained_models/custom_classifier.h5
+sha256sum ./src/trained_models/<your_trained_model>.h5
 ```
 
 Add (or update) an entry for the model's path (relative to the repository root) in `src/trusted_models.json` with the resulting digest, for example:
 
 ```json
 {
-  "src/trained_models/custom_classifier.h5": {
+  "src/trained_models/<your_trained_model>.h5": {
     "sha256": "<digest from sha256sum>"
   }
 }
