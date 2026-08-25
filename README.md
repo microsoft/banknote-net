@@ -124,6 +124,42 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
 The dataset is open for anyone to use under the [CDLA-Permissive-2.0](https://spdx.org/licenses/CDLA-Permissive-2.0.html) license. The embeddings should not be used to reconstruct high resolution banknote images.
 
+## Model Loading and Trust Model
+
+`predict_custom.py` and `train_custom.py` load Keras models from local `.h5` (HDF5) files. The legacy HDF5 Keras format can embed `Lambda` layers, whose Python code is serialized as marshalled bytecode and executed the moment the file is deserialized by `tensorflow.keras.models.load_model`. Loading an arbitrary or untrusted `.h5` file is therefore equivalent to running arbitrary code (CWE-502), and this holds true for the TensorFlow/h5py versions pinned in [env.yaml](./env.yaml).
+
+To protect against this, both scripts verify the provenance of any `.h5` file **before** it is deserialized, using [`src/model_security.py`](./src/model_security.py):
+
+1. **Exact path + digest allow-list.** [`src/trusted_models.json`](./src/trusted_models.json) maps repository-relative model paths to their SHA-256 digest. A model is only loaded if its fully-resolved path matches an entry *and* its SHA-256 digest matches exactly. A file is never trusted merely because it shares a filename with a trusted model.
+2. **No symlinks.** Model paths that are symlinks are rejected outright.
+3. **Verify-then-load on the same bytes.** The file is read into memory, hashed, and then handed to Keras as an in-memory `h5py.File` built from those exact verified bytes — the same bytes that were hashed are the bytes that get deserialized, removing the window for a file-swap (TOCTOU) attack between verification and loading.
+4. **Structural inspection.** Before deserialization, the model's embedded configuration is parsed and rejected if it contains a `Lambda`/`TFOpLambda` layer, or any layer/object type outside of a small, explicit allow-list of standard Keras layers used by this repository's models. This is defense in depth, since TensorFlow 2.4.1 (pinned in `env.yaml`) predates any Keras `safe_mode` protections.
+5. **`compile=False`.** Models are loaded without restoring the training configuration/optimizer state, since inference and feature-extraction don't require it.
+
+If validation fails for any reason (unregistered path, digest mismatch, malformed manifest, symlink, disallowed layer type, etc.), the script prints a clear error and exits **without ever calling `load_model`**. There is no unsafe fallback and no opt-out flag.
+
+The models tracked in this repository ([`src/trained_models/custom_classifier.h5`](./src/trained_models/custom_classifier.h5), [`src/trained_models/shallow_classifier.h5`](./src/trained_models/shallow_classifier.h5), and [`models/banknote_net_encoder.h5`](./models/banknote_net_encoder.h5)) are already registered in `src/trusted_models.json`, so the documented usage above works out of the box.
+
+### Registering your own trained model
+
+If you train your own model with [train_custom.py](./src/train_custom.py) and want to load it with `predict_custom.py` (or use it as an encoder), you must register it as trusted first:
+
+```
+sha256sum ./src/trained_models/custom_classifier.h5
+```
+
+Add (or update) an entry for the model's path (relative to the repository root) in `src/trusted_models.json` with the resulting digest, for example:
+
+```json
+{
+  "src/trained_models/custom_classifier.h5": {
+    "sha256": "<digest from sha256sum>"
+  }
+}
+```
+
+Re-run `sha256sum` and update the manifest any time the model file changes; the manifest is intentionally strict and will refuse to load a model whose digest no longer matches.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

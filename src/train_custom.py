@@ -13,8 +13,10 @@ import os
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Input
-from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+from model_security import ModelTrustError, load_verified_keras_model
 
 
 def parse_arguments():
@@ -150,8 +152,22 @@ def main():
         NUM_CLASSES=NUM_CLASSES,
     )
 
-    # Load encoder model and freeze layers
-    encoder = load_model(ENC_PATH)
+    # Load encoder model and freeze layers.
+    #
+    # Only HDF5 model files registered by exact path + SHA-256 digest in
+    # src/trusted_models.json are trusted, to prevent CWE-502 unsafe
+    # deserialization from an untrusted or tampered .h5 file. See
+    # README.md for the trust model and how to register a model.
+    try:
+        encoder = load_verified_keras_model(ENC_PATH)
+    except ModelTrustError as exc:
+        raise SystemExit(
+            f"Refusing to load untrusted encoder model file '{ENC_PATH}': "
+            f"{exc}\n"
+            "Only .h5 files registered in src/trusted_models.json (by "
+            "exact path and SHA-256 digest) are loaded. See README.md "
+            "for how to register a trusted model."
+        )
     for layer in encoder.layers:
         layer.trainable = False
 

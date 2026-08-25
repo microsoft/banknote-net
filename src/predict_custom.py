@@ -11,8 +11,9 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+from model_security import ModelTrustError, load_verified_keras_model
 
 
 def parse_arguments():
@@ -109,8 +110,23 @@ def main():
         NUM_CLASSES=NUM_CLASSES,
     )
 
-    # Load model and make predictions
-    model = load_model(MODEL_PATH)
+    # Load model and make predictions.
+    #
+    # Only HDF5 model files registered by exact path + SHA-256 digest in
+    # src/trusted_models.json are trusted. This prevents CWE-502 unsafe
+    # deserialization (e.g. Keras Lambda-layer bytecode execution) from an
+    # untrusted or tampered .h5 file. See README.md for details on the
+    # trust model and how to register a model you have trained yourself.
+    try:
+        model = load_verified_keras_model(MODEL_PATH)
+    except ModelTrustError as exc:
+        raise SystemExit(
+            "Refusing to load untrusted model file "
+            f"'{MODEL_PATH}': {exc}\n"
+            "Only .h5 files registered in src/trusted_models.json (by "
+            "exact path and SHA-256 digest) are loaded. See README.md "
+            "for how to register a trusted model."
+        )
 
     predictions = model.predict(val_ds, batch_size=1, steps=15)
     predictions = np.argmax(predictions, axis=1)

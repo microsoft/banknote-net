@@ -1,0 +1,11 @@
+{
+  "models/banknote_net_encoder.h5": {
+    "sha256": "dac0226b785ec22ae3b198a386b0f5842affdf9e18ab49cd4de31cbf8cb28477"
+  },
+  "src/trained_models/custom_classifier.h5": {
+    "sha256": "a00e22166a595e35920d8728740ed33cfa5b823558c1aec9ac2043870e01b585"
+  },
+  "src/trained_models/shallow_classifier.h5": {
+    "sha256": "be595c28de7f75555c4010fc8d8f795a65d3ea11039ca195cf77887e905614a0"
+  }
+}
