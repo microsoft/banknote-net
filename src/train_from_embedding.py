@@ -9,6 +9,7 @@
 import argparse
 
 import pandas as pd
+import pyarrow_hotfix  # noqa: F401 - importing applies the CVE-2023-47248 mitigation
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.layers import Dense, Dropout, Input
